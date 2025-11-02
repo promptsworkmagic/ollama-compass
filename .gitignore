@@ -19,3 +19,4 @@ gitleaks-report.json
 venv/
 .venv/
 __pycache__/
+*.pyc
