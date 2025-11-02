@@ -19,11 +19,41 @@
         .badge.mid { background-color: #f39c12; }
         .badge.low { background-color: #2ecc71; }
         .badge.unknown { background-color: #95a5a6; }
+        .actions { background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .actions form { display: inline-block; margin: 0 10px; }
+        .actions input[type='text'] { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .actions button { padding: 10px 20px; border: none; border-radius: 4px; color: #fff; background-color: #3498db; cursor: pointer; font-size: 1em; }
+        .actions button:hover { background-color: #2980b9; }
+        .flash-messages { list-style-type: none; padding: 0; margin-bottom: 20px; }
+        .flash-messages li { padding: 15px; border-radius: 4px; margin-bottom: 10px; }
+        .flash-messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash-messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Live Ollama Hosts</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="actions">
+            <form action="{{ url_for('run_hunter') }}" method="post">
+                <input type="text" name="shodan-cookie" placeholder="Enter Shodan Cookie" required>
+                <button type="submit">Run Ollama Hunter</button>
+            </form>
+            <form action="{{ url_for('run_refresh') }}" method="post">
+                <button type="submit">Refresh Live Hosts</button>
+            </form>
+        </div>
+
         <table>
             <thead>
                 <tr>

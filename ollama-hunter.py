@@ -5,8 +5,13 @@ import time
 import json
 import database
 
-# === USER INPUT ===
-polito_cookie = input("Enter your Shodan 'polito' cookie value: ").strip()
+import argparse
+
+# === ARGUMENT PARSING ===
+parser = argparse.ArgumentParser(description="Scrape Shodan for Ollama instances and save them to the database.")
+parser.add_argument("--cookie", required=True, help="Your Shodan 'polito' cookie value.")
+args = parser.parse_args()
+polito_cookie = args.cookie
 
 # === SETTINGS ===
 BASE_URL = "https://www.shodan.io/search"

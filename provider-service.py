@@ -1,6 +1,42 @@
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, redirect, url_for, request, flash
 import database
+import subprocess
+import sys
+
+app = Flask(__name__)
+app.secret_key = 'supersecretkey' # Needed for flashing messages
+
+@app.route("/run-hunter", methods=["POST"])
+def run_hunter():
+    """Triggers the ollama-hunter.py script as a background process."""
+    cookie = request.form.get('shodan-cookie')
+    if not cookie:
+        flash("Shodan cookie is required!", "error")
+        return redirect(url_for('index'))
+
+    try:
+        # Use Popen to run the script in the background
+        # We pass the python executable from the current environment
+        python_executable = sys.executable
+        subprocess.Popen([python_executable, "ollama-hunter.py", "--cookie", cookie])
+        flash("Ollama Hunter process started in the background. Refresh the page in a few moments to see results.", "success")
+    except Exception as e:
+        flash(f"Failed to start Ollama Hunter: {e}", "error")
+    
+    return redirect(url_for('index'))
+
+@app.route("/run-refresh", methods=["POST"])
+def run_refresh():
+    """Triggers the refresh-hosts.py script as a background process."""
+    try:
+        python_executable = sys.executable
+        subprocess.Popen([python_executable, "refresh-hosts.py"])
+        flash("Host refresh process started in the background. Refresh the page in a few moments to see results.", "success")
+    except Exception as e:
+        flash(f"Failed to start host refresh: {e}", "error")
+
+    return redirect(url_for('index'))
 
 app = Flask(__name__)
 
