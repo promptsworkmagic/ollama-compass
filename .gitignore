@@ -9,6 +9,8 @@ ollama_hosts_with_*.txt
 GEMINI.md
 .project-context/*
 
+gitleaks-report.json
+
 # Databases
 *.db
 *.sqlite3
