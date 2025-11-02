@@ -4,3 +4,11 @@
 # Ignore generated output files
 ollama_models_details.csv
 ollama_hosts_with_*.txt
+
+# Ignore Gemini context files
+GEMINI.md
+.project-context/*
+
+# Databases
+*.db
+*.sqlite3

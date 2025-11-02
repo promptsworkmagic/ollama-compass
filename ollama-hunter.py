@@ -2,8 +2,8 @@
 import requests
 from bs4 import BeautifulSoup
 import time
-import csv
 import json
+import database
 
 # === USER INPUT ===
 polito_cookie = input("Enter your Shodan 'polito' cookie value: ").strip()
@@ -130,8 +130,8 @@ def estimate_host_performance(detailed_models):
     return "Mid-Range" # Default for intermediate cases
 
 def main():
-    all_ips = set()
-    csv_output_file = "ollama_models_details.csv"
+    database.create_database() # Ensure db is created
+    processed_ips = set()
 
     try:
         page = START_PAGE
@@ -142,36 +142,31 @@ def main():
                 break
 
             for ip in ips:
-                if ip in all_ips:
+                if ip in processed_ips:
                     continue
+                
+                processed_ips.add(ip)
 
                 print(f"[+] Checking {ip}...")
                 detailed_models = fetch_models_from_ip(ip)
+
                 if detailed_models:
-                    print(f"  [>] Found {len(detailed_models)} models on {ip}")
                     performance_guess = estimate_host_performance(detailed_models)
+                    print(f"  [>] Found {len(detailed_models)} models on {ip}")
                     print(f"  [i] Probable performance: {performance_guess}")
-                    
-                    # Write to CSV
-                    with open(csv_output_file, "a", newline="", encoding="utf-8") as csvfile:
-                        fieldnames = ["ip_address", "model_name", "parameter_size", "quantization_level", "modified_at", "probable_performance"]
-                        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                        if csvfile.tell() == 0:
-                            writer.writeheader()
-                        
-                        for model in detailed_models:
-                            writer.writerow({
-                                "ip_address": ip,
-                                "probable_performance": performance_guess,
-                                "model_name": model["name"],
-                                "parameter_size": model["parameter_size"],
-                                "quantization_level": model["quantization_level"],
-                                "modified_at": model["modified_at"],
-                            })
+
+                    host_id = database.add_or_update_host(ip, performance_guess, is_alive=1)
+                    database.clear_models_for_host(host_id)
+                    database.add_models(host_id, detailed_models)
+                    print(f"  [✓] Host {ip} and its models saved to the database.")
+
                 else:
                     print(f" [-] {ip} has no models or is unreachable.")
+                    host = database.get_host_by_ip(ip)
+                    if host:
+                        database.mark_host_as_dead(host['id'])
+                        print(f"  [!] Marked host {ip} as dead in the database.")
 
-                all_ips.add(ip)
                 time.sleep(1)
 
             page += 1
@@ -180,7 +175,7 @@ def main():
     except KeyboardInterrupt:
         print("\n[!] Interrupted by user.")
 
-    print(f"\n[✓] Done. Detailed results saved to: {csv_output_file}")
+    print(f"\n[✓] Done. Database is up to date.")
 
 if __name__ == "__main__":
     main()
