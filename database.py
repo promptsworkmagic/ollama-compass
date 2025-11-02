@@ -38,9 +38,7 @@ def create_database():
             FOREIGN KEY (host_id) REFERENCES hosts (id)
         )
     ''')
-    
     conn.commit()
-    conn.close()
 
 def add_or_update_host(ip_address, performance, is_alive=1):
     """Adds a new host or updates the last_seen, performance, and is_alive status of an existing one."""
@@ -69,7 +67,6 @@ def add_or_update_host(ip_address, performance, is_alive=1):
         host_id = cursor.lastrowid
         
     conn.commit()
-    conn.close()
     return host_id
 
 def add_models(host_id, models):
@@ -82,9 +79,7 @@ def add_models(host_id, models):
             INSERT INTO models (host_id, name, modified_at, parameter_size, quantization_level)
             VALUES (?, ?, ?, ?, ?)
         ''', (host_id, model['name'], model['modified_at'], model['parameter_size'], model['quantization_level']))
-        
     conn.commit()
-    conn.close()
 
 def get_all_hosts():
     """Retrieves all hosts from the database."""
@@ -92,7 +87,6 @@ def get_all_hosts():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM hosts")
     hosts = cursor.fetchall()
-    conn.close()
     return hosts
 
 def get_host_by_ip(ip_address):
@@ -101,7 +95,6 @@ def get_host_by_ip(ip_address):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM hosts WHERE ip_address = ?", (ip_address,))
     host = cursor.fetchone()
-    conn.close()
     return host
 
 def mark_host_as_dead(host_id):
@@ -110,7 +103,6 @@ def mark_host_as_dead(host_id):
     cursor = conn.cursor()
     cursor.execute("UPDATE hosts SET is_alive = 0 WHERE id = ?", (host_id,))
     conn.commit()
-    conn.close()
 
 def clear_models_for_host(host_id):
     """Clears all models for a given host."""
@@ -118,7 +110,6 @@ def clear_models_for_host(host_id):
     cursor = conn.cursor()
     cursor.execute("DELETE FROM models WHERE host_id = ?", (host_id,))
     conn.commit()
-    conn.close()
 
 if __name__ == '__main__':
     print("[+] Initializing database...")

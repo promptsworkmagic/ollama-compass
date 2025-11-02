@@ -12,6 +12,7 @@ This tool is designed for researchers and security analysts who want to map and 
 -   **Database Storage**: Saves all discovered hosts and their models to a persistent SQLite database (`ollama_hosts.db`).
 -   **Host Refresh**: Includes a script to periodically check the liveness of discovered hosts and update their model lists.
 -   **API Service**: Provides a local Flask-based API to serve the collected data in JSON format.
+-   **Web UI**: A simple web interface to visualize the live Ollama hosts and their models.
 -   **Detailed Analysis**: Estimates host performance based on the models they are running.
 
 ---
@@ -24,10 +25,10 @@ It is recommended to run this project in a Python virtual environment.
 
 ```bash
 # Create a virtual environment
-python3 -m venv .venv
+python3 -m venv venv
 
 # Activate the virtual environment
-source .venv/bin/activate
+source venv/bin/activate
 ```
 
 ### 2. Installation
@@ -70,19 +71,19 @@ python refresh-hosts.py
 
 **D. Run the Provider Service (`provider-service.py`)**
 
-This script starts a local web service that exposes the collected data via an API.
+This script starts a local web service that exposes the collected data via an API and a web UI.
 
 ```bash
 python provider-service.py
 ```
 
-The API will be available at `http://0.0.0.0:5000/api/providers`.
+The API will be available at `http://0.0.0.0:5000/api/providers` and the Web UI at `http://0.0.0.0:5000/`.
 
 ### Utility Scripts
 
 **Interrogate a Single Host (`interrogate-host.py`)**
 
-This script queries a single Ollama host and appends its model details to the `ollama_models_details.csv` file. *Note: This script has not been updated to use the database.*
+This script queries a single Ollama host and saves its model details to the database.
 
 ```bash
 python interrogate-host.py <IP_ADDRESS>
