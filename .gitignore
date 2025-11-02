@@ -12,3 +12,6 @@ GEMINI.md
 # Databases
 *.db
 *.sqlite3
+
+# virtual environments
+.venv/*
