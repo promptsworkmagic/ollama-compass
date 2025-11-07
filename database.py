@@ -1,8 +1,10 @@
 
 import sqlite3
 from datetime import datetime
+import os
 
-DB_FILE = "ollama_hosts.db"
+# Use DATABASE_PATH from environment variable, with a default for local development
+DB_FILE = os.environ.get('DATABASE_PATH', "ollama_hosts.db")
 
 def get_db_connection():
     """Establishes a connection to the SQLite database."""
@@ -12,6 +14,11 @@ def get_db_connection():
 
 def create_database():
     """Initializes the database and creates tables if they don't exist."""
+    # Ensure the directory for the database file exists
+    db_dir = os.path.dirname(DB_FILE)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir)
+
     conn = get_db_connection()
     cursor = conn.cursor()
     

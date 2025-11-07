@@ -1,0 +1,22 @@
+# Ignore Git directory
+.git
+
+# Ignore Python virtual environment
+.venv
+venv
+
+# Ignore IDE and editor directories
+.vscode
+.idea
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore other artifacts
+.project-context/
+.gemini/
+reports/
+*.log

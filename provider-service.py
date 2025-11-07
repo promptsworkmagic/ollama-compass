@@ -117,6 +117,24 @@ def get_providers():
     conn.close()
     return jsonify(providers)
 
+import requests
+
+@app.route("/api/host/<ip_address>/status", methods=["GET"])
+def get_host_status(ip_address):
+    """
+    Acts as a proxy to query a remote host's /api/ps endpoint.
+    This is necessary to avoid browser CORS issues.
+    """
+    url = f"http://{ip_address}:11434/api/ps"
+    try:
+        res = requests.get(url, timeout=5)
+        res.raise_for_status()
+        return jsonify(res.json())
+    except requests.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
 if __name__ == "__main__":
     database.create_database() # Ensure database is initialized
     # Check for FLASK_ENV environment variable to determine debug mode

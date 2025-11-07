@@ -50,6 +50,16 @@
         th a { color: #fff; text-decoration: none; }
         th a:hover { text-decoration: underline; }
         th.sorted { background-color: #2980b9; }
+        .ip-link { color: #2980b9; text-decoration: underline; cursor: pointer; }
+
+        /* Modal styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-header { padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+        .modal-header h2 { margin: 0; }
+        .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-button:hover, .close-button:focus { color: #000; }
+        #modal-body-content { margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -111,7 +121,7 @@
             <tbody>
                 {% for host in hosts %}
                 <tr>
-                    <td>{{ host.ip_address }}</td>
+                    <td><a href="#" class="ip-link" data-ip="{{ host.ip_address }}">{{ host.ip_address }}</a></td>
                     <td>{{ host.country or 'N/A' }}</td>
                     <td>{{ host.last_seen }}</td>
                     <td>
@@ -140,11 +150,76 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="3" style="text-align: center;">No live hosts found in the database.</td>
+                    <td colspan="5" style="text-align: center;">No live hosts found in the database.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- The Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-button">&times;</span>
+                <h2 id="modal-title">Running Models</h2>
+            </div>
+            <div id="modal-body-content">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('statusModal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body-content');
+            const closeButton = document.querySelector('.close-button');
+
+            document.querySelectorAll('.ip-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const ip = this.dataset.ip;
+                    modalTitle.innerText = `Running Models on ${ip}`;
+                    modalBody.innerHTML = '<p>Loading...</p>';
+                    modal.style.display = 'block';
+
+                    fetch(`/api/host/${ip}/status`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                throw new Error(data.error);
+                            }
+                            if (data.models && data.models.length > 0) {
+                                let content = '<ul class="models-list">';
+                                data.models.forEach(model => {
+                                    const sizeInGB = (model.size_vram / 1e9).toFixed(2);
+                                    content += `<li><strong>${model.name}</strong> (${sizeInGB} GB VRAM)</li>`;
+                                });
+                                content += '</ul>';
+                                modalBody.innerHTML = content;
+                            } else {
+                                modalBody.innerHTML = '<p>No models are currently running on this host.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            modalBody.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${error.message}</p>`;
+                        });
+                });
+            });
+
+            closeButton.onclick = function() {
+                modal.style.display = 'none';
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>
