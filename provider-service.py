@@ -19,10 +19,10 @@ def run_compass():
         # Use Popen to run the script in the background
         # We pass the python executable from the current environment
         python_executable = sys.executable
-        subprocess.Popen([python_executable, "ollama-compass.py", "--cookie", cookie])
-        flash("Ollama Compass process started in the background. Refresh the page in a few moments to see results.", "success")
+        subprocess.Popen([python_executable, "thanks-ollama.py", "--cookie", cookie])
+        flash("Thanks Ollama process started in the background. Refresh the page in a few moments to see results.", "success")
     except Exception as e:
-        flash(f"Failed to start Ollama Compass: {e}", "error")
+        flash(f"Failed to start Thanks Ollama: {e}", "error")
     
     return redirect(url_for('index'))
 

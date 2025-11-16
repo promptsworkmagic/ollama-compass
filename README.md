@@ -1,6 +1,6 @@
-# Ollama Compass
+# Thanks Ollama
 
-**Ollama Compass** is a Python toolset that discovers, analyzes, and serves information about publicly exposed Ollama LLM instances. It uses Shodan to find hosts, stores the data in a local SQLite database, and provides an interactive web interface to manage and view the data.
+**Thanks Ollama** is a Python toolset that discovers, analyzes, and serves information about publicly exposed Ollama LLM instances. It uses Shodan to find hosts, stores the data in a local SQLite database, and provides an interactive web interface to manage and view the data.
 
 This tool is designed for researchers and security analysts who want to map and monitor the exposure of open LLM endpoints on the internet.
 
@@ -69,7 +69,7 @@ Navigate to **`http://127.0.0.1:5000`** in your web browser to access the main i
 
 ### 4. Using the Web Interface
 
--   **Run Ollama Compass**: To discover new hosts, enter your Shodan `polito` cookie value in the input field and click "Run Ollama Compass". The scan will start in the background. Refresh the page after a few moments to see new results.
+-   **Run Thanks Ollama**: To discover new hosts, enter your Shodan `polito` cookie value in the input field and click "Run Thanks Ollama". The scan will start in the background. Refresh the page after a few moments to see new results.
 -   **Refresh Live Hosts**: Click the "Refresh Live Hosts" button to start a background task that checks the status of all hosts in the database.
 -   **Filter and Sort**: Use the filter dropdown to select one or more models and click "Filter". Click on the "Last Seen" or "Probable Performance" table headers to sort the results.
 
