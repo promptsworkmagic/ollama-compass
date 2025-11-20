@@ -9,7 +9,7 @@ app.secret_key = 'supersecretkey' # Needed for flashing messages
 
 @app.route("/run-compass", methods=["POST"])
 def run_compass():
-    """Triggers the ollama-compass.py script as a background process."""
+    """Triggers the thanks-ollama.py script as a background process."""
     cookie = request.form.get('shodan-cookie')
     if not cookie:
         flash("Shodan cookie is required!", "error")
@@ -48,8 +48,7 @@ def stream_refresh():
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            bufsize=1,
-            universal_newlines=True
+            bufsize=1
         )
         for line in process.stdout:
             yield f"data: {line}\n\n"
